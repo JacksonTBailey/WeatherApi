@@ -2,6 +2,7 @@ const fahrenheit= document.getElementById('tempF')
 const celcius= document.getElementById('tempC')
 const dayOfTheWeek=document.getElementById('dayOfTheWeek')
 const weatherDay=document.getElementById('weatherDay')
+const key = config.My_API_Key;
 
 const weatherDaysArray=[7,1,2,3,4,5,6]
 
@@ -52,21 +53,21 @@ async function createWeather(day) {
   }
 
 async function callFahrenheit(){
-    let weatherDataFahrenehit = await fetch("https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=960b6b424c69324fbac73c311bfa1d32").then(response=>response.json())
+    let weatherDataFahrenehit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
     let ftemp=weatherDataFahrenehit.daily[0].temp.day
     console.log(ftemp);
     return ftemp;
 }
 
 async function callCelcius(){
-    let weatherDataCelcius = await fetch("https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=metric&exclude=hourly&appid=960b6b424c69324fbac73c311bfa1d32").then(response=>response.json())
+    let weatherDataCelcius = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
     let ctemp=weatherDataCelcius.daily[0].temp.day
     console.log(ctemp);
     return ctemp;
 }
 
 async function callDays(time){
-    let weatherDataDays = await fetch("https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=960b6b424c69324fbac73c311bfa1d32").then(response=>response.json())
+    let weatherDataDays = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
     // let ctemp=weatherDataCelcius.daily[0].temp.day
     console.log(weatherDataDays);
     let unixTimestamp = weatherDataDays.daily[time].dt
