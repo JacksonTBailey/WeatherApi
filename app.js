@@ -2,6 +2,7 @@ const fahrenheit= document.getElementById('tempF')
 const celcius= document.getElementById('tempC')
 const dayOfTheWeek=document.getElementById('dayOfTheWeek')
 const weatherDay=document.getElementById('weatherDay')
+const imageOfWeather=document.getElementById('imageOfWeather')
 const key = config.My_API_Key;
 
 const weatherDaysArray=[7,1,2,3,4,5,6]
@@ -17,6 +18,10 @@ function writeCelciusToScreen(text) {
 function writeDayToScreen(text) {
     dayOfTheWeek.innerText = text;
   };
+
+function writeImageToScreen(text) {
+    imageOfWeather.innerText = text;
+  };  
   
 function clearScreenOptions() {
     while(weatherDay.firstChild){
@@ -40,11 +45,15 @@ async function createWeather(day) {
     const fa = document.createElement('p');
     const ce = document.createElement('p');
     const wd = document.createElement('p');
+    const img = document.createElement('img')
   
     fa.innerText= await callFahrenheit(day);
     ce.innerText = await callCelcius(day);
-    wd.innerText = await dayOfTheWeek(day)
-    console.log(fa.innerHTML, ce.innerText, wd.innerText);
+    wd.innerText = await callDays(day)
+    img.src= await weatherImage(day)
+    console.log(img.src, fa.innerText, ce.innerText, wd.innerText,);
+    
+    div.appendChild(img)
     div.appendChild(fa)
     div.appendChild(ce)
     div.appendChild(wd)
@@ -52,23 +61,22 @@ async function createWeather(day) {
     return div;
   }
 
-async function callFahrenheit(){
+async function callFahrenheit(time){
     let weatherDataFahrenehit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
-    let ftemp=weatherDataFahrenehit.daily[0].temp.day
+    let ftemp=weatherDataFahrenehit.daily[time].temp.day
     console.log(ftemp);
     return ftemp;
 }
 
-async function callCelcius(){
-    let weatherDataCelcius = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
-    let ctemp=weatherDataCelcius.daily[0].temp.day
+async function callCelcius(time){
+    let weatherDataCelcius = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=metric&exclude=hourly&appid=${key}`).then(response=>response.json())
+    let ctemp=weatherDataCelcius.daily[time].temp.day
     console.log(ctemp);
     return ctemp;
 }
 
 async function callDays(time){
     let weatherDataDays = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
-    // let ctemp=weatherDataCelcius.daily[0].temp.day
     console.log(weatherDataDays);
     let unixTimestamp = weatherDataDays.daily[time].dt
     let date = new Date(unixTimestamp * 1000);
@@ -80,11 +88,19 @@ async function callDays(time){
     let seconds = date.getSeconds();
     let weekDay = new Date(Date.UTC(year, month, day, hours, minutes,seconds))
     let longWeekDay={weekday:'long', year:'numeric',month:'long', day:'numeric'};
+    // let currentDate = (month+'/'+day+'/'+year+' '+hours+':'+minutes+':'+seconds);
 
-    console.log(weekDay.toLocaleDateString('en-US',longWeekDay));
-    let currentDate = (month+'/'+day+'/'+year+' '+hours+':'+minutes+':'+seconds);
-    console.log(currentDate);
+    return weekDay.toLocaleDateString('en-US',longWeekDay);
+    
 }
 
+async function weatherImage(time){
+    let weatherDataImages = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
+    let weatherIcon = weatherDataImages.daily[time].weather[0].icon
+    console.log(weatherIcon);
+    let icon = `http://openweathermap.org/img/wn/${weatherIcon}@2x.png`
+    return(icon);
 
-callDays(weatherDaysArray)
+}
+
+writeWeatherToScreen(weatherDaysArray)
