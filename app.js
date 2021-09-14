@@ -16,10 +16,17 @@ let lat;
 
 //If user presses any key in the search bar and releases, it will display suggestions
 inputBox.onkeyup = async (e)=>{
-    let userData=e.target.value; //user entered data
+    let userData=e.target.value;
+    let userEnter=e.key; //user entered data
+    console.log(userEnter);
     let emptyArray= [];
     let suggestions = await citySuggestions(userData)
-    if(userData){
+    
+    //If Enter is pressed, it takes the input with a class of .item0 and performs callCity and writeWeatherToScreen
+    if(userEnter==="Enter"){
+        console.log("performing userEnter");
+        await select(userEnter)
+    } else if(userData){
         emptyArray = suggestions.filter((data)=>{
             //filtering array value and user characters to lowercase and returning only those places which starts with whatever user typed.
             return data.toLocaleLowerCase().startsWith(userData.toLocaleLowerCase());
@@ -45,21 +52,22 @@ async function select(element) {
     if(icon.onclick){
         inputBox.value= document.querySelector(".item0").textContent
         console.log(inputBox.value);
+        searchWrapper.classList.remove("active")
         await callCity(inputBox.value)
         await writeWeatherToScreen()
 
-        //For pressing enter
-    // }else if(inputBox.onkeypress==="Enter"){
-    //         inputBox.value= document.querySelector(".item0").textContent
-    //         console.log(inputBox.value);
-    //         await callCity(inputBox.value)
-    //         await writeWeatherToScreen()
+    }else if(element ="Enter"){
+            inputBox.value= document.querySelector(".item0").textContent
+            console.log(inputBox.value);
+            searchWrapper.classList.remove("active")
+            await callCity(inputBox.value)
+            await writeWeatherToScreen()
     }else{
         inputBox.value = selectUserData;
+        searchWrapper.classList.remove("active")
         await callCity(selectUserData)
         await writeWeatherToScreen()
-    }
-    searchWrapper.classList.remove("active") //hides autocomplete box
+    } //hides autocomplete box
 
 }
 
