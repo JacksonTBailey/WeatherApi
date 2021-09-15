@@ -8,6 +8,7 @@ const searchWrapper = document.querySelector(".search-input")
 const inputBox = searchWrapper.querySelector("input")
 const suggBox = searchWrapper.querySelector(".autocom-box")
 const icon= searchWrapper.querySelector(".fa-search-location")
+let buttonTextStatus="on"
 
 const key=myApi.apiKey
 let cityName;
@@ -49,14 +50,14 @@ inputBox.onkeyup = async (e)=>{
 
 async function select(element) {
     let selectUserData=element.textContent;
-    if(icon.onclick){
+    if(element===icon){
         inputBox.value= document.querySelector(".item0").textContent
         console.log(inputBox.value);
         searchWrapper.classList.remove("active")
         await callCity(inputBox.value)
         await writeWeatherToScreen()
 
-    }else if(element ="Enter"){
+    }else if(element ==="Enter"){
             inputBox.value= document.querySelector(".item0").textContent
             console.log(inputBox.value);
             searchWrapper.classList.remove("active")
@@ -82,21 +83,26 @@ function showSuggestions(list){
     suggBox.innerHTML = listData
 }
 
-//Changes weather button from the text fahrenheit to celcius
-// addGlobalEventListener("click", btn, e=>{
-//     if(btn.value==="Fahrenheit"){
-//         btn.value==="Celcius";
-//     } else{
-//         btn.value==="Fahrenheit";
-//     }
-// })
-
-// //Adds an event listener that checks if the weather button was clicked
-// function addGlobalEventListener(type, selector, callback){
-//   document.addEventListener(type, e=>{
-//     if (e.target.matches(selector)) callback(e)
-//   })
-// }
+// Changes weather button from the text fahrenheit to celcius
+function theOlSwitcherroo(){
+  let wButton = document.querySelector(".weatherButton")
+  let tempFar = document.querySelectorAll(".weatherTempF")
+  let tempCel = document.querySelectorAll(".weatherTempC")
+  switch(buttonTextStatus){
+    case "on":
+      buttonTextStatus="off";
+      wButton.innerText ="Celcius";
+      [...tempFar].forEach((temp)=>temp.style.display="none");
+      [...tempCel].forEach((temp)=>temp.style.display="block");
+      break;
+    case "off":
+      buttonTextStatus="on";
+      wButton.innerText="Fahrenheit";
+      [...tempFar].forEach((temp)=>temp.style.display="block");
+      [...tempCel].forEach((temp)=>temp.style.display="none");
+      break;
+  }
+}
 
 function writeFahrenheitToScreen(text) {
     fahrenheit.innerText = text;
@@ -158,6 +164,7 @@ async function createCurrentDayWeather(day) {
     tempConverter.innerText= "Fahrenheit";
     tempConverter.value="Fahrenheit";
     tempConverter.type="button"
+    tempConverter.setAttribute("onclick", "theOlSwitcherroo()")
     city.innerText = cityName;
     description.innerText = await callDescription(day);
     wd.innerText = await callDays(day);
@@ -169,7 +176,7 @@ async function createCurrentDayWeather(day) {
     city.classList.add(`weatherCity`, `weatherCity${day}`)
     tempF.classList.add(`weatherTempF`, `weatherTempF${day}`)
     tempC.classList.add(`weatherTempC`, `weatherTempC${day}`)
-    tempConverter.classList.add(`weatherButton`, `weatherButton${day}`)
+    tempConverter.classList.add(`weatherButton`)
     description.classList.add(`weatherDescription`, `weatherDescription${day}`)
     wd.classList.add(`weatherWd`, `weatherWd${day}`)
     img.classList.add(`weatherImage`, `weatherImage${day}`)
@@ -280,3 +287,5 @@ async function citySuggestions(city){
     });
     return(cityNames);
 }
+
+

@@ -80,15 +80,16 @@ body {
   display: grid;
   justify-self: center;
   width: 100%;
-  grid-template-columns: 50% 10% 30%;
+  grid-template-columns: 60% 20% 20%;
   column-gap: 2%;
+  background-color: white;
 }
 .weatherImage {
   justify-self: center;
   align-self: center;
   grid-row: 1/2;
   grid-column: 2/3;
-  height: 5vh;
+  height: 8vh;
 }
 .weatherTemp {
   text-align: center;
@@ -104,7 +105,20 @@ body {
   grid-column: 1/2;
   font-size: 1vh;
   padding-left: 2%;
+  font-size: 2vh;
 }
+.weatherTempF {
+  display: block;
+  font-size: 3vh;
+  align-self: flex-start;
+}
+
+.weatherTempC {
+  display: none;
+  font-size: 3vh;
+  align-self: flex-start;
+}
+
 /* Outer div */
 .weatherDiv0 {
   grid-row: 1/2;
@@ -190,7 +204,7 @@ body {
   font-size: 2vh;
   color: white;
 }
-.weatherButton0 {
+.weatherButton {
   padding: 2% 5%;
   margin-bottom: 2vh;
   margin-right: 5%;
@@ -201,4 +215,6 @@ body {
   color: white;
   background-color: cadetblue;
   border: white;
+  border-radius: 1px;
+  cursor: pointer;
 }
