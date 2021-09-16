@@ -4,6 +4,7 @@ const dayOfTheWeek=document.getElementById('dayOfTheWeek')
 const weatherDay=document.getElementById('weatherDay')
 const imageOfWeather=document.getElementById('imageOfWeather')
 const btn=document.getElementsByClassName('weatherButton')
+const wrapper = document.querySelector(".wrapper")
 const searchWrapper = document.querySelector(".search-input")
 const inputBox = searchWrapper.querySelector("input")
 const suggBox = searchWrapper.querySelector(".autocom-box")
@@ -55,6 +56,7 @@ async function select(element) {
         console.log(inputBox.value);
         searchWrapper.classList.remove("active")
         await callCity(inputBox.value)
+        wrapper.style.display="none"
         await writeWeatherToScreen()
 
     }else if(element ==="Enter"){
@@ -62,13 +64,15 @@ async function select(element) {
             console.log(inputBox.value);
             searchWrapper.classList.remove("active")
             await callCity(inputBox.value)
+            wrapper.style.display="none"
             await writeWeatherToScreen()
     }else{
         inputBox.value = selectUserData;
         searchWrapper.classList.remove("active")
         await callCity(selectUserData)
+        wrapper.style.display="none"
         await writeWeatherToScreen()
-    } //hides autocomplete box
+    }
 
 }
 
@@ -287,5 +291,3 @@ async function citySuggestions(city){
     });
     return(cityNames);
 }
-
-
