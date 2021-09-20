@@ -13,8 +13,26 @@ let buttonTextStatus="on"
 
 const key=myApi.apiKey
 let cityName;
-let long;
-let lat;
+let lat
+let long
+
+window.onload = checkLocalStorage();
+async function checkLocalStorage() {
+  if("localLong" in localStorage && "localLat" in localStorage && "weatherData" in localStorage){
+    let lat = JSON.parse(localStorage.getItem("localLat")).cityLat
+    let long = JSON.parse(localStorage.getItem("localLong")).cityLong 
+    console.log(long, lat)
+    let getData = await fetch(`https://api.teleport.org/api/locations/${lat},${long}/`).then(response=>response.json())
+    console.log(getData)
+    cityName=getData["_embedded"]["location:nearest-cities"][0]["_links"]["location:nearest-city"].name
+    wrapper.style.display="none"
+    writeWeatherToScreen()
+  }
+  else{
+    console.log("Still need data")
+    console.log(localStorage)
+  }
+}
 
 //If user presses any key in the search bar and releases, it will display suggestions
 inputBox.onkeyup = async (e)=>{
@@ -129,13 +147,42 @@ function clearScreenOptions() {
       weatherDay.removeChild(weatherDay.firstChild);
     }
   };
+
+async function locationToLocalStorage(){
+  Date.prototype.getDOY = function() {
+    var onejan = new Date(this.getFullYear(),0,1);
+    return Math.ceil((this - onejan) / 86400000);
+  }
+  
+  var today = new Date();
+  let finalDate=new Intl.DateTimeFormat('en-US', {dateStyle: 'full'}).format(today);
+  console.log(finalDate)
+  if (localStorage.getItem("weatherData")===null && await callDays(0) !== finalDate ){
+    let weatherDataFahrenheit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
+    const weatherData = {
+      weather: weatherDataFahrenheit
+    }
+    const jsonObj = JSON.stringify(weatherData);
+    localStorage.setItem("weatherData", jsonObj);
+  }
+} 
   
 async function writeWeatherToScreen() {
     //Remove previous options
     clearScreenOptions();
+    
+    if (localStorage.getItem("weatherData")===null){
+      let weatherDataFahrenheit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
+      const weatherData = {
+        weather: weatherDataFahrenheit
+      }
+      const jsonObj = JSON.stringify(weatherData);
+      localStorage.setItem("weatherData", jsonObj);
+    }
 
-    let weatherDataFahrenheit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
-    const periods = weatherDataFahrenheit.daily;
+    const str = localStorage.getItem("weatherData");
+    const parsedObj = JSON.parse(str);
+    const periods = parsedObj.weather.daily;
     console.log(periods);
     let currentDay=0;
     let everyDay=[];
@@ -225,55 +272,68 @@ async function createWeeklyWeather(day) {
   }
 
 async function callCelcius(time){
-    let weatherDataCelcius = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&units=metric&exclude=hourly&appid=${key}`).then(response=>response.json())
-    let tempC=Math.round(weatherDataCelcius.daily[time].temp.day)
-    let celcius= `${tempC}\xB0`
-    return celcius;
+  const str = localStorage.getItem("weatherData");
+  const parsedObj = JSON.parse(str);
+  let tempC=Math.round(((parsedObj.weather.daily[time].temp.day)-32)/1.8)
+  let celcius= `${tempC}\xB0`
+  return celcius;
 
 }
 
 async function callFahrenheit(time){
-    let weatherDataFahrenheit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
-    let tempF=Math.round(weatherDataFahrenheit.daily[time].temp.day)
-    let fahrenheit= `${tempF}\xB0`
-    return fahrenheit;
+  const str = localStorage.getItem("weatherData");
+  const parsedObj = JSON.parse(str);
+  let tempF=Math.round(parsedObj.weather.daily[time].temp.day)
+  let fahrenheit= `${tempF}\xB0`
+  return fahrenheit;
 
 }
 
 async function callDays(time){
-    let weatherDataFahrenheit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
-    //console.log(forcast);
-    let epoch=weatherDataFahrenheit.daily[time].dt
-    let date = new Date(epoch*1000);
-    let finalDate=new Intl.DateTimeFormat('en-US', {dateStyle: 'full'}).format(date);
-    return finalDate;
+  const str = localStorage.getItem("weatherData");
+  const parsedObj = JSON.parse(str);
+  let epoch=parsedObj.weather.daily[time].dt
+  let date = new Date(epoch*1000);
+  let finalDate=new Intl.DateTimeFormat('en-US', {dateStyle: 'full'}).format(date);
+  return finalDate;
     
 }
 
 async function weatherImage(time){
-    let weatherDataFahrenheit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
-    let weatherIcon= `http://openweathermap.org/img/wn/${weatherDataFahrenheit.daily[time].weather[0].icon}@2x.png`;
-    return weatherIcon;
+  const str = localStorage.getItem("weatherData");
+  const parsedObj = JSON.parse(str);
+  let weatherIcon= `http://openweathermap.org/img/wn/${parsedObj.weather.daily[time].weather[0].icon}@2x.png`;
+   return weatherIcon;
 
 }
 
 async function callDescription(day){
-  let weatherDataFahrenheit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=34.9386111&lon=-82.2272222&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
-  let description = weatherDataFahrenheit.daily[day].weather[0].description
+  const str = localStorage.getItem("weatherData");
+  const parsedObj = JSON.parse(str);
+  let description = parsedObj.weather.daily[day].weather[0].description
   return description;
 }
 
 //found on developers.teleport.org/api/getting_started
 async function callCity(city){
-  let getData = await fetch(`https://api.teleport.org/api/cities/?search=${city}`).then(response=>response.json())
-  let getCity=getData["_embedded"]["city:search-results"][0]["_links"]["city:item"].href
-  let getCityData= await fetch(`${getCity}`).then(response=>response.json())
-  cityName=getCityData.name;
-  let getLat=getCityData.location.latlon.latitude
-  let getLon=getCityData.location.latlon.longitude
-  long=getLon;
-  lat=getLat;
-  return (long, lat)
+    let getData = await fetch(`https://api.teleport.org/api/cities/?search=${city}`).then(response=>response.json())
+    let getCity=getData["_embedded"]["city:search-results"][0]["_links"]["city:item"].href
+    let getCityData= await fetch(`${getCity}`).then(response=>response.json())
+    lat = getCityData.location.latlon.latitude;
+    long = getCityData.location.latlon.longitude;
+
+    cityName=getCityData.name;
+
+    let localLat={cityLat:getCityData.location.latlon.latitude}
+    let localLong={cityLong: getCityData.location.latlon.longitude}
+  
+    const longObj = JSON.stringify(localLong);
+    const latObj = JSON.stringify(localLat)
+    localStorage.setItem("localLong", longObj);
+    localStorage.setItem("localLat", latObj);
+    console.log(long,lat)
+    return (long, lat)
+
 }
 
 async function citySuggestions(city){
