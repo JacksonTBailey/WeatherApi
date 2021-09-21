@@ -105,6 +105,11 @@ function showSuggestions(list){
     suggBox.innerHTML = listData
 }
 
+function chooseNewLocation(){
+  localStorage.clear()
+  window.location.reload(false)
+}
+
 // Changes weather button from the text fahrenheit to celcius
 function theOlSwitcherroo(){
   let wButton = document.querySelector(".weatherButton")
@@ -202,7 +207,7 @@ async function writeWeatherToScreen() {
 
 async function createCurrentDayWeather(day) {
     const div = document.createElement('div');
-    const city = document.createElement('p');
+    const city = document.createElement('button');
     const description= document.createElement('p');
     const tempF = document.createElement('p');
     const tempC = document.createElement('p');
@@ -217,6 +222,9 @@ async function createCurrentDayWeather(day) {
     tempConverter.type="button"
     tempConverter.setAttribute("onclick", "theOlSwitcherroo()")
     city.innerText = cityName;
+    city.value = cityName;
+    city.type="button"
+    city.setAttribute("onclick", "chooseNewLocation()")
     description.innerText = await callDescription(day);
     wd.innerText = await callDays(day);
     img.src= await weatherImage(day);

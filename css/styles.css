@@ -157,6 +157,10 @@ body {
   grid-column: 2/4;
   font-size: 3vh;
   color: white;
+  background-color: cadetblue;
+  border: white;
+  border-radius: 1px;
+  cursor: pointer;
 }
 .weatherImage0 {
   justify-self: flex-end;
