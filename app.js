@@ -9,12 +9,12 @@ const searchWrapper = document.querySelector(".search-input")
 const inputBox = searchWrapper.querySelector("input")
 const suggBox = searchWrapper.querySelector(".autocom-box")
 const icon= searchWrapper.querySelector(".fa-search-location")
-let buttonTextStatus="on"
-
+let buttonTextStatus="on";
 const key=myApi.apiKey
 let cityName;
 let lat
 let long
+let loaderMain
 
 window.onload = checkLocalStorage();
 async function checkLocalStorage() {
@@ -75,21 +75,33 @@ async function select(element) {
         searchWrapper.classList.remove("active")
         await callCity(inputBox.value)
         wrapper.style.display="none"
+        document.getElementsByClassName("loader")[0].style.display = "block"
         await writeWeatherToScreen()
+        let changeWeatherStyle=document.getElementsByClassName("weatherDiv");
+        [...changeWeatherStyle].forEach((day)=>day.style.display="none")
+        timer()
 
     }else if(element ==="Enter"){
-            inputBox.value= document.querySelector(".item0").textContent
-            console.log(inputBox.value);
-            searchWrapper.classList.remove("active")
-            await callCity(inputBox.value)
-            wrapper.style.display="none"
-            await writeWeatherToScreen()
+        inputBox.value= document.querySelector(".item0").textContent
+        console.log(inputBox.value);
+        searchWrapper.classList.remove("active")
+        await callCity(inputBox.value)
+        wrapper.style.display="none"
+        document.getElementsByClassName("loader")[0].style.display = "block"
+        await writeWeatherToScreen()
+        let changeWeatherStyle=document.getElementsByClassName("weatherDiv");
+        [...changeWeatherStyle].forEach((day)=>day.style.display="none")
+        timer()
     }else{
         inputBox.value = selectUserData;
         searchWrapper.classList.remove("active")
         await callCity(selectUserData)
         wrapper.style.display="none"
+        document.getElementsByClassName("loader")[0].style.display = "block"
         await writeWeatherToScreen()
+        let changeWeatherStyle=document.getElementsByClassName("weatherDiv");
+        [...changeWeatherStyle].forEach((day)=>day.style.display="none")
+          timer()
     }
 
 }
@@ -153,6 +165,16 @@ function clearScreenOptions() {
     }
   };
 
+  function timer() {
+    loaderMain = setTimeout(showPage, 1500);
+  }
+  
+  function showPage() {
+    document.getElementsByClassName("loader")[0].style.display = "none";
+    let changeWeatherStyle=document.getElementsByClassName("weatherDiv");
+      [...changeWeatherStyle].forEach((day)=>day.style.display="grid")
+  }
+
 async function locationToLocalStorage(){
   Date.prototype.getDOY = function() {
     var onejan = new Date(this.getFullYear(),0,1);
@@ -175,6 +197,7 @@ async function locationToLocalStorage(){
 async function writeWeatherToScreen() {
     //Remove previous options
     clearScreenOptions();
+    document.getElementsByClassName("loader")[0].style.display = "block"
     
     if (localStorage.getItem("weatherData")===null){
       let weatherDataFahrenheit = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&units=imperial&exclude=hourly&appid=${key}`).then(response=>response.json())
@@ -203,6 +226,7 @@ async function writeWeatherToScreen() {
         const div = await createWeeklyWeather(day);
         weatherDay.append(div)
     });
+    timer()
   };
 
 async function createCurrentDayWeather(day) {
@@ -231,7 +255,7 @@ async function createCurrentDayWeather(day) {
 
   console.log(tempF.innerText, tempC.innerText, tempConverter.innerText,city.innerText, description.innerText, wd.innerText, img.src);
 
-    div.classList.add(`weatherDiv`,`weatherDiv${day}`)
+    div.classList.add(`weatherDiv`,`weatherDiv${day}`, `animate-bottom`)
     city.classList.add(`weatherCity`, `weatherCity${day}`)
     tempF.classList.add(`weatherTempF`, `weatherTempF${day}`)
     tempC.classList.add(`weatherTempC`, `weatherTempC${day}`)
@@ -258,14 +282,14 @@ async function createWeeklyWeather(day) {
     const tempC = document.createElement('p');
     const wd = document.createElement('p');
     const img = document.createElement('img')
-  
+
     tempF.innerText= await callFahrenheit(day);
     tempC.innerText= await callCelcius(day);
     wd.innerText = await callDays(day)
     img.src= await weatherImage(day)
 
 
-    div.classList.add(`weatherDiv`,`weatherDiv${day}`)
+    div.classList.add(`weatherDiv`,`weatherDiv${day}`, `animate-bottom`)
     img.classList.add(`weatherImage`, `weatherImage${day}`)
     tempF.classList.add(`weatherTempF`, `weatherTempF${day}`)
     tempC.classList.add(`weatherTempC`, `weatherTempC${day}`)
@@ -359,3 +383,6 @@ async function citySuggestions(city){
     });
     return(cityNames);
 }
+
+
+
