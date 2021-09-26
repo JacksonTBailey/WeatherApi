@@ -231,7 +231,8 @@ async function writeWeatherToScreen() {
 
 async function createCurrentDayWeather(day) {
     const div = document.createElement('div');
-    const city = document.createElement('button');
+    const city = document.createElement('p');
+    const backout = document.createElement('button')
     const description= document.createElement('p');
     const tempF = document.createElement('p');
     const tempC = document.createElement('p');
@@ -246,9 +247,10 @@ async function createCurrentDayWeather(day) {
     tempConverter.type="button"
     tempConverter.setAttribute("onclick", "theOlSwitcherroo()")
     city.innerText = cityName;
-    city.value = cityName;
-    city.type="button"
-    city.setAttribute("onclick", "chooseNewLocation()")
+    backout.value = "x"
+    backout.innerText = "x"
+    backout.type="button"
+    backout.setAttribute("onclick", "chooseNewLocation()")
     description.innerText = await callDescription(day);
     wd.innerText = await callDays(day);
     img.src= await weatherImage(day);
@@ -257,6 +259,7 @@ async function createCurrentDayWeather(day) {
 
     div.classList.add(`weatherDiv`,`weatherDiv${day}`, `animate-bottom`)
     city.classList.add(`weatherCity`, `weatherCity${day}`)
+    backout.classList.add(`weatherBackout`)
     tempF.classList.add(`weatherTempF`, `weatherTempF${day}`)
     tempC.classList.add(`weatherTempC`, `weatherTempC${day}`)
     tempConverter.classList.add(`weatherButton`)
@@ -264,6 +267,7 @@ async function createCurrentDayWeather(day) {
     wd.classList.add(`weatherWd`, `weatherWd${day}`)
     img.classList.add(`weatherImage`, `weatherImage${day}`)
 
+    div.appendChild(backout)
     div.appendChild(city)
     div.appendChild(img)
     div.appendChild(tempF)
@@ -326,7 +330,8 @@ async function callDays(time){
   const parsedObj = JSON.parse(str);
   let epoch=parsedObj.weather.daily[time].dt
   let date = new Date(epoch*1000);
-  let finalDate=new Intl.DateTimeFormat('en-US', {dateStyle: 'full'}).format(date);
+  let options = {weekday: 'long', month:'long',day:'numeric'}
+  let finalDate=new Intl.DateTimeFormat('en-US', options).format(date);
   return finalDate;
     
 }
