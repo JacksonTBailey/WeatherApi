@@ -29,6 +29,7 @@ async function checkLocalStorage() {
     writeWeatherToScreen()
   }
   else{
+    weatherDay.style.display="none"
     console.log("Still need data")
     console.log(localStorage)
   }
@@ -76,6 +77,7 @@ async function select(element) {
         await callCity(inputBox.value)
         wrapper.style.display="none"
         document.getElementsByClassName("loader")[0].style.display = "block"
+        weatherDay.style.display="grid"
         await writeWeatherToScreen()
         let changeWeatherStyle=document.getElementsByClassName("weatherDiv");
         [...changeWeatherStyle].forEach((day)=>day.style.display="none")
@@ -88,6 +90,7 @@ async function select(element) {
         await callCity(inputBox.value)
         wrapper.style.display="none"
         document.getElementsByClassName("loader")[0].style.display = "block"
+        weatherDay.style.display="grid"
         await writeWeatherToScreen()
         let changeWeatherStyle=document.getElementsByClassName("weatherDiv");
         [...changeWeatherStyle].forEach((day)=>day.style.display="none")
@@ -98,6 +101,7 @@ async function select(element) {
         await callCity(selectUserData)
         wrapper.style.display="none"
         document.getElementsByClassName("loader")[0].style.display = "block"
+        weatherDay.style.display="grid"
         await writeWeatherToScreen()
         let changeWeatherStyle=document.getElementsByClassName("weatherDiv");
         [...changeWeatherStyle].forEach((day)=>day.style.display="none")
@@ -165,14 +169,15 @@ function clearScreenOptions() {
     }
   };
 
-  function timer() {
-    loaderMain = setTimeout(showPage, 1500);
+
+function timer() {
+  loaderMain = setTimeout(showPage, 1500);
   }
   
-  function showPage() {
-    document.getElementsByClassName("loader")[0].style.display = "none";
-    let changeWeatherStyle=document.getElementsByClassName("weatherDiv");
-      [...changeWeatherStyle].forEach((day)=>day.style.display="grid")
+function showPage() {
+  document.getElementsByClassName("loader")[0].style.display = "none";
+  let changeWeatherStyle=document.getElementsByClassName("weatherDiv");
+    [...changeWeatherStyle].forEach((day)=>day.style.display="grid")
   }
 
 async function locationToLocalStorage(){
@@ -330,7 +335,7 @@ async function callDays(time){
   const parsedObj = JSON.parse(str);
   let epoch=parsedObj.weather.daily[time].dt
   let date = new Date(epoch*1000);
-  let options = {weekday: 'long', month:'long',day:'numeric'}
+  let options = {weekday: 'long', month:'short',day:'numeric'}
   let finalDate=new Intl.DateTimeFormat('en-US', options).format(date);
   return finalDate;
     
@@ -388,6 +393,3 @@ async function citySuggestions(city){
     });
     return(cityNames);
 }
-
-
-
